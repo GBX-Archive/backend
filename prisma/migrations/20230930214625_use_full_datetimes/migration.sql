@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "episode" ALTER COLUMN "date" SET DATA TYPE TIMESTAMP;
