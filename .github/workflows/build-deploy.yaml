@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Build & Deploy for Raspberry Pi
 
 on:
   push:
@@ -8,46 +8,46 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-        contents: read
-        packages: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build Docker image
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build Docker image for ARM
         run: |
-          docker build -t ghcr.io/gbx-archive/backend:latest -f docker/Dockerfile .
+          docker buildx create --use
+          docker buildx build --platform linux/arm/v7 -t ghcr.io/gbx-archive/backend:latest -f docker/Dockerfile .
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push ghcr.io/gbx-archive/backend:latest
 
-      - name: Clean up
-        run: |
-          docker logout
-          rm -rf node_modules
-
   deploy:
-    needs: build  # Ensure the build job completes before deploying
+    needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Install SSH key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
-          chmod 600 ssh_key
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_IP }} >> ~/.ssh/known_hosts
           eval "$(ssh-agent -s)"
-          ssh-add ssh_key
+          ssh-add ~/.ssh/id_ed25519
 
-      - name: SSH into the server and deploy
+      - name: deploy
         run: |
-          ssh -i ssh_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} 'docker pull ghcr.io/gbx-archive/backend:latest'
-          ssh -i ssh_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} 'docker stop gbx-archive-backend || true'
-          ssh -i ssh_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} 'docker rm gbx-archive-backend || true'
-          ssh -i ssh_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} 'docker run -d --name gbx-archive-backend -p 8080:8080 --env-file /home/data/gbxa-backend.env ghcr.io/gbx-archive/backend:latest'
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} 'docker pull ghcr.io/gbx-archive/backend:latest'
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} 'docker stop gbx-archive-backend || true'
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} 'docker rm gbx-archive-backend || true'
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_IP }} 'docker run -d --name gbx-archive-backend -p 8080:8080 --env-file /home/data/gbxa-backend.env ghcr.io/gbx-archive/backend:latest'
 
       - name: Clean up SSH key
         run: |
           ssh-agent -k
-          rm -f ssh_key
