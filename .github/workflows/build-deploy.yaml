@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
 
     steps:
       - name: Checkout code
@@ -27,6 +30,7 @@ jobs:
   deploy:
     needs: build  # Ensure the build job completes before deploying
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Install SSH key
