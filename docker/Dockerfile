@@ -13,9 +13,6 @@ RUN npm install
 # copy the source code to the container
 COPY . .
 
-# generate prisma client
-RUN npx prisma generate
-
 # build the application ( compile the TS to JS )
 RUN npm run build
 
