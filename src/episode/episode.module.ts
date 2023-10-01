@@ -4,6 +4,6 @@ import { EpisodeController } from './episode.controller';
 
 @Module({
   providers: [EpisodeService],
-  controllers: [EpisodeController]
+  controllers: [EpisodeController],
 })
 export class EpisodeModule {}

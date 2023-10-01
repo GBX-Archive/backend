@@ -8,7 +8,7 @@ import { EpisodeModule } from './episode/episode.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }), 
+    ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     EpisodeModule,
   ],

@@ -4,16 +4,16 @@ import FetchLatest from 'src/tasks/fetch_latest';
 
 @Controller('episode')
 export class EpisodeController {
-    constructor(private readonly episodeService: EpisodeService) {}
+  constructor(private readonly episodeService: EpisodeService) {}
 
-    @Get()
-    getEpisodes(@Query() query: any) {
-        return this.episodeService.getEpisodes(query);
-    }
+  @Get()
+  getEpisodes(@Query() query: any) {
+    return this.episodeService.getEpisodes(query);
+  }
 
-    @Get('refresh')
-    refreshEpisodes() {
-        FetchLatest();
-        return { message: 'Refreshing episodes...' };
-    }
+  @Get('refresh')
+  refreshEpisodes() {
+    FetchLatest();
+    return { message: 'Refreshing episodes...' };
+  }
 }
