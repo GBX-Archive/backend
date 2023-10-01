@@ -1,4 +1,7 @@
 import { Pool } from 'pg';
+import { config } from 'dotenv';
+
+config();
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -13,6 +16,10 @@ const execQuery = async(text: string, params: any[] = []) => {
 
 const execQueryOne = async(text: string, params: any[] = []) => {
     const result = await pool.query(text, params);
+
+    if (result.rows.length === 0) {
+        return null;
+    }
 
     return result.rows[0];
 }

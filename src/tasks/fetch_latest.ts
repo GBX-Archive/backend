@@ -4,6 +4,7 @@ import uploadFile from "../../utils/s3";
 import * as fs from 'fs';
 import * as moment from "moment";
 import * as db from '../../db';
+import { episode } from "@prisma/client";
 
 const FetchLatest = async () => {
     const url = 'https://listenapi.planetradio.co.uk/api9.2/audibles?StationCode=cl1&listenagain.ShowId%5B%5D=13035&_pp=15&premium=1';
@@ -26,7 +27,7 @@ const FetchLatest = async () => {
             const episode = await db.execQueryOne(`
                 SELECT * FROM episode
                 WHERE clyde_id = $1
-            `, [ep.id]);
+            `, [ep.id]) as episode | null;
 
             if (episode === null) {
                 console.log('adding episode');
