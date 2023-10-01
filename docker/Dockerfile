@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 8080
 
 # start the application
-CMD ["node", "--max-old-space-size=200", "build/src/main.js"]
+CMD ["node", "--max-old-space-size=200", "dist/src/main.js"]

@@ -53,4 +53,5 @@ jobs:
 
       - name: Clean up SSH key
         run: |
-          ssh-agent -k
+          rm ~/.ssh/id_ed25519
+          rm ~/.ssh/known_hosts
