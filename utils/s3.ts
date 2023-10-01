@@ -1,6 +1,9 @@
 import * as AWS from 'aws-sdk';
 import { Readable } from 'stream';
 import { readFileSync, unlinkSync } from 'fs';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const s3 = new AWS.S3({
     // Note: I use digital ocean spaces, so I have to set the endpoint
