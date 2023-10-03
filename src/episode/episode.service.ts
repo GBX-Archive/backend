@@ -4,6 +4,7 @@ import * as db from '../../db';
 const valid_filters = [
   'date__gte',
   'date__lte',
+  'date',
   'show',
   'sort',
   'order',
@@ -14,6 +15,13 @@ const valid_filters = [
 @Injectable()
 export class EpisodeService {
   async getEpisodes(query: any) {
+    // remove invalid filters
+    for (const key in query) {
+      if (!valid_filters.includes(key)) {
+        delete query[key];
+      }
+    }
+
     let filter = '';
 
     if (query.show) {
@@ -40,6 +48,17 @@ export class EpisodeService {
       } else if (query.date__lte) {
         filter += ` date <= '${query.date__lte}'`;
       }
+    }
+
+    if (query.date && !query.date__gte && !query.date__lte) {
+      // can be any time on that day
+      if (filter) {
+        filter += ' AND';
+      } else {
+        filter += ' WHERE';
+      }
+
+      filter += ` date BETWEEN '${query.date} 00:00:00' AND '${query.date} 23:59:59'`;
     }
 
     const sort = query.sort || 'date'; // sort by date by default
