@@ -10,15 +10,15 @@ export class TasksService {
     this.logger.log('TasksService initialized');
   }
 
-  @Cron('5 22 * * 5') // every friday at 22:05 (GBX)
+  @Cron('30 22 * * 5') // every friday at 22:30 (GBX)
   handleCron() {
     this.logger.debug('Requesting latest episodes from Clyde 1...');
     FetchLatest();
     this.logger.debug('Done.');
   }
 
-  // every saturday at 22:05 (GBX)
-  @Cron('5 22 * * 6')
+  // every saturday at 22:30 (GBX)
+  @Cron('30 22 * * 6')
   handleCron2() {
     this.logger.debug('Requesting latest episodes from Clyde 1...');
     FetchLatest();
@@ -26,7 +26,7 @@ export class TasksService {
   }
 
   // every sunday at 22:05 (Sunday Night Takeover)
-  @Cron('0 5 22 * * 0')
+  @Cron('30 22 * * 7')
   handleCron3() {
     this.logger.debug('Requesting latest episodes from Clyde 1...');
     FetchLatest();
