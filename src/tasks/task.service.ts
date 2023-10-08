@@ -26,7 +26,7 @@ export class TasksService {
   }
 
   // every sunday at 22:05 (Sunday Night Takeover)
-  @Cron('30 22 * * 7')
+  @Cron('30 22 * * 0')
   handleCron3() {
     this.logger.debug('Requesting latest episodes from Clyde 1...');
     FetchLatest();
